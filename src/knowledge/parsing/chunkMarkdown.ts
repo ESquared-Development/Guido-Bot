@@ -58,8 +58,14 @@ export function chunkMarkdownDocument(document: KnowledgeDocument): KnowledgeChu
     if (headingMatch) {
       flushSection();
 
-      const level = headingMatch[1].length;
-      const title = headingMatch[2].trim() || "Untitled Section";
+      const hashes = headingMatch[1];
+      const headingTitle = headingMatch[2];
+      if (hashes === undefined || headingTitle === undefined) {
+        continue;
+      }
+
+      const level = hashes.length;
+      const title = headingTitle.trim() || "Untitled Section";
 
       headingStack = headingStack.filter((heading) => heading.level < level);
       headingStack.push({ level, title });
