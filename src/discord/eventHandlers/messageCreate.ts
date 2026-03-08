@@ -1,22 +1,34 @@
 import { Events, Message } from "discord.js";
 import type { Client } from "discord.js";
-import type { Logger } from "../../app/logger/logger.js";
+import type { Logger } from "../../app/logger.js";
 
+/**
+ * Message event handler.
+ *
+ * Future phases will:
+ * - detect mentions
+ * - detect reply-to-bot
+ * - route thread messages
+ */
 export function registerMessageCreateHandler(client: Client, logger: Logger): void {
   client.on(Events.MessageCreate, async (message: Message) => {
-    if (message.author.bot) return;
+    if (message.author.bot) {
+      logger.debug("Ignored bot-authored message", {
+        event: "discord.message.ignored_bot",
+        messageId: message.id,
+        authorId: message.author.id,
+        channelId: message.channelId,
+      });
+      return;
+    }
 
-    logger.debug("Message received", {
-      event: "discord.message_create",
+    logger.debug("Received user message", {
+      event: "discord.message.received",
       messageId: message.id,
-      channelId: message.channelId,
       guildId: message.guildId ?? null,
+      channelId: message.channelId,
       authorId: message.author.id,
+      contentLength: message.content.length,
     });
-
-    // Phase 3:
-    // - mention detection
-    // - reply-to-bot detection
-    // - route to retrieval + response pipeline
   });
 }

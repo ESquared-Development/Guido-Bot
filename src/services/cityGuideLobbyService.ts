@@ -1,4 +1,4 @@
-import type { Logger } from "../app/logger/logger.js";
+import type { Logger } from "../app/logger.js";
 
 export class CityGuideLobbyService {
   constructor(private readonly logger: Logger) {}

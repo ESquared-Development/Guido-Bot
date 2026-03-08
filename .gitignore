@@ -2,5 +2,4 @@ node_modules
 dist
 .env
 data/logs/*.log
-data/logs/*.log
-data/logs/**/*.log
+data/usage/*.json

@@ -1,13 +1,16 @@
 import { Events } from "discord.js";
 import type { Client } from "discord.js";
-import type { Logger } from "../../app/logger/logger.js";
+import type { Logger } from "../../app/logger.js";
 
+/**
+ * Log when the bot becomes ready.
+ */
 export function registerReadyHandler(client: Client, logger: Logger): void {
   client.once(Events.ClientReady, (readyClient) => {
-    logger.info("Discord client ready", {
+    logger.info("Discord client is ready", {
       event: "discord.ready",
-      userTag: readyClient.user.tag,
-      userId: readyClient.user.id,
+      botUserId: readyClient.user.id,
+      botUserTag: readyClient.user.tag,
     });
   });
 }
