@@ -1,6 +1,6 @@
 import { ConfigError } from "./errors.js";
 import { getEnv } from "./env.js";
-import type { BudgetEnforcementMode, LogLevel, NodeEnv } from "./types.js";
+import type { BudgetEnforcementMode, LogLevel, NodeEnv } from "./types.ts";
 import type { AIConfig } from "../types/ai.js";
 
 /**
@@ -101,16 +101,21 @@ function parseBudgetEnforcement(value?: string): BudgetEnforcementMode {
  * Load and validate all runtime configuration.
  */
 export function loadConfig(): AppConfig {
+  const clientId = optionalEnv("DISCORD_CLIENT_ID");
+  const guildId = optionalEnv("DISCORD_GUILD_ID");
+  const cityGuideChannelId = optionalEnv("CITY_GUIDE_CHANNEL_ID");
+  const staffRoleId = optionalEnv("STAFF_ROLE_ID");
+
   return {
     nodeEnv: parseNodeEnv(optionalEnv("NODE_ENV")),
     logLevel: parseLogLevel(optionalEnv("LOG_LEVEL")),
 
     discord: {
       token: requireEnv("DISCORD_TOKEN"),
-      clientId: optionalEnv("DISCORD_CLIENT_ID"),
-      guildId: optionalEnv("DISCORD_GUILD_ID"),
-      cityGuideChannelId: optionalEnv("CITY_GUIDE_CHANNEL_ID"),
-      staffRoleId: optionalEnv("STAFF_ROLE_ID"),
+      ...(clientId !== undefined ? { clientId } : {}),
+      ...(guildId !== undefined ? { guildId } : {}),
+      ...(cityGuideChannelId !== undefined ? { cityGuideChannelId } : {}),
+      ...(staffRoleId !== undefined ? { staffRoleId } : {}),
     },
 
     ai: {

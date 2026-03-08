@@ -48,6 +48,12 @@ export class KnowledgeServiceError extends AppError {
   }
 }
 
+export class KnowledgeError extends AppError {
+  constructor(message: string, details?: Record<string, unknown>, cause?: unknown) {
+    super(message, { code: "KNOWLEDGE_ERROR", details, cause });
+  }
+}
+
 export class SessionServiceError extends AppError {
   constructor(message: string, details?: Record<string, unknown>, cause?: unknown) {
     super(message, { code: "SESSION_SERVICE_ERROR", details, cause });
