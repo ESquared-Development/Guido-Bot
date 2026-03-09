@@ -120,7 +120,7 @@ export function loadConfig(): AppConfig {
 
     ai: {
       apiKey: requireEnv("OPENAI_API_KEY"),
-      model: optionalEnv("OPENAI_MODEL") ?? "gpt-5.4",
+      model: optionalEnv("OPENAI_MODEL") ?? "gpt-4.1-mini",
 
       limits: {
         maxInputChars: parsePositiveNumber("AI_MAX_INPUT_CHARS", 12000),
