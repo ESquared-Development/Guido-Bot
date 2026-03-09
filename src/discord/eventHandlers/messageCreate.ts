@@ -1,8 +1,8 @@
 import { Events, Message } from "discord.js";
 import type { Client } from "discord.js";
 import type { Logger } from "../../app/logger.js";
-import type { MessageRoutingDecision as RoutingDecision } from "../../types/discord.js";
 import type { DiscordHandlerDeps } from "../registerHandlers.js";
+import type { MessageRoutingDecision as RoutingDecision } from "../../types/discord.js";
 
 /**
  * Register the Discord messageCreate event.
