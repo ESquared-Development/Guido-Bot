@@ -115,7 +115,7 @@ export function registerMessageCreateHandler(
       });
 
       try {
-        await message.reply("Sorry — I hit an error while generating a reply. Please try again.");
+        await message.reply("I hit a municipal paperwork jam while processing that request. Please try again in a moment.");
       } catch {
         // No-op: avoid unhandled errors from fallback reply attempts.
       }
