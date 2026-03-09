@@ -37,8 +37,8 @@ export interface AIUsageRecord {
   estimatedInputTokens: number;
   maxOutputTokens: number;
   estimatedCostUsd: number;
-  sessionId?: string;
-  channelId?: string;
-  guildId?: string;
-  userId?: string;
+  sessionId?: string | undefined;
+  channelId?: string | undefined;
+  guildId?: string | undefined;
+  userId?: string | undefined;
 }
