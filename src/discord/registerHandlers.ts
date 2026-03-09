@@ -1,10 +1,14 @@
 import type { Client } from "discord.js";
 import type { Logger } from "../app/logger.js";
-import type { MentionRouter } from "../services/mentionRouter.js";
-import type { ConversationService } from "../services/conversationService.js";
+import type OpenAI from "openai";
 import { registerReadyHandler } from "./eventHandlers/ready.js";
 import { registerMessageCreateHandler } from "./eventHandlers/messageCreate.js";
 import { registerInteractionCreateHandler } from "./eventHandlers/interactionCreate.js";
+
+export interface DiscordHandlerDeps {
+  openaiClient: OpenAI;
+  model: string;
+}
 
 /**
  * Register all Discord event handlers in one place.
@@ -15,20 +19,13 @@ import { registerInteractionCreateHandler } from "./eventHandlers/interactionCre
 export function registerDiscordHandlers(
   client: Client,
   logger: Logger,
-  mentionRouter: MentionRouter,
-  conversationService: ConversationService,
+  deps: DiscordHandlerDeps,
 ): void {
   registerReadyHandler(client, logger.child({ service: "discord.ready" }));
-
   registerMessageCreateHandler(
     client,
     logger.child({ service: "discord.message" }),
-    mentionRouter,
-    conversationService,
+    deps,
   );
-
-  registerInteractionCreateHandler(
-    client,
-    logger.child({ service: "discord.interaction" }),
-  );
+  registerInteractionCreateHandler(client, logger.child({ service: "discord.interaction" }));
 }
