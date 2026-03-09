@@ -1,13 +1,8 @@
 import { Events, Message } from "discord.js";
 import type { Client } from "discord.js";
 import type { Logger } from "../../app/logger.js";
-<<<<<<< HEAD
-import type { MentionRouter } from "../../services/mentionRouter.js";
-import type { ConversationService } from "../../services/conversationService.js";
-=======
-import type { MessageRoutingDecision } from "../../types/discord.js";
+import type { MessageRoutingDecision as RoutingDecision } from "../../types/discord.js";
 import type { DiscordHandlerDeps } from "../registerHandlers.js";
->>>>>>> refs/remotes/origin/master
 
 /**
  * Register the Discord messageCreate event.
@@ -18,7 +13,7 @@ import type { DiscordHandlerDeps } from "../registerHandlers.js";
  * - respond to replies to GUIDO
  * - generate grounded answers from rules/guides
  */
-function routeMessage(message: Message, client: Client): MessageRoutingDecision {
+function routeMessage(message: Message, client: Client): RoutingDecision {
   const content = message.content.trim();
 
   if (message.author.bot) {
