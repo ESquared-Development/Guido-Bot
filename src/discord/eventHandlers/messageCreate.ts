@@ -1,8 +1,8 @@
 import { Events, Message } from "discord.js";
 import type { Client } from "discord.js";
 import type { Logger } from "../../app/logger.js";
-import type { MessageRoutingDecision } from "../../types/discord.js";
 import type { DiscordHandlerDeps } from "../registerHandlers.js";
+import type { MessageRoutingDecision as RoutingDecision } from "../../types/discord.js";
 
 /**
  * Message event handler.
@@ -12,7 +12,7 @@ import type { DiscordHandlerDeps } from "../registerHandlers.js";
  * - detect reply-to-bot
  * - route thread messages
  */
-function routeMessage(message: Message, client: Client): MessageRoutingDecision {
+function routeMessage(message: Message, client: Client): RoutingDecision {
   const content = message.content.trim();
 
   if (message.author.bot) {
