@@ -8,6 +8,7 @@ import { registerInteractionCreateHandler } from "./eventHandlers/interactionCre
 export interface DiscordHandlerDeps {
   openaiClient: OpenAI;
   model: string;
+  maxOutputTokens: number;
 }
 
 /**
