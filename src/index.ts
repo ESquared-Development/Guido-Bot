@@ -8,7 +8,10 @@ import { registerDiscordHandlers } from "./discord/registerHandlers.js";
 async function main(): Promise<void> {
   const app = await bootstrapApp();
 
-  registerDiscordHandlers(app.discordClient, app.logger);
+  registerDiscordHandlers(app.discordClient, app.logger, {
+    openaiClient: app.openaiClient,
+    model: app.config.ai.model,
+  });
   registerShutdownHandlers(app.discordClient, app.logger);
 
   app.logger.info("Attempting Discord login", {
