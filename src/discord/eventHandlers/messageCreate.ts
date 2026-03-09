@@ -95,49 +95,6 @@ export function registerMessageCreateHandler(
       reason: routingDecision.reason,
     });
 
-<<<<<<< HEAD
-    if (!routingDecision.shouldRespond) {
-      return;
-    }
-
-    /**
-     * Remove the mention markup if present and normalize the user question.
-     */
-    const cleanedQuestion = mentionRouter.cleanPromptText(message);
-
-    if (!cleanedQuestion) {
-      await message.reply(
-        "You rang? Toss me a question and I'll check the city records.",
-      );
-      return;
-    }
-
-    try {
-      /**
-       * Send a typing indicator so the interaction feels responsive.
-       */
-      await message.channel.sendTyping();
-
-      const result = await conversationService.generateReply({
-        userQuestion: cleanedQuestion,
-        guildId: message.guildId ?? undefined,
-        channelId: message.channelId,
-        userId: message.author.id,
-      });
-
-      await message.reply(result.replyText);
-
-      logger.info("GUIDO replied to message", {
-        event: "discord.message.replied",
-        messageId: message.id,
-        guildId: message.guildId ?? null,
-        channelId: message.channelId,
-        authorId: message.author.id,
-        requestId: result.requestId,
-        blockedByBudget: result.blockedByBudget,
-      });
-    } catch (error) {
-=======
     try {
       const input = normalizePrompt(message, client);
       const completion = await deps.openaiClient.responses.create({
@@ -148,7 +105,6 @@ export function registerMessageCreateHandler(
       const text = completion.output_text?.trim() || "I couldn't generate a response just now.";
       await message.reply(text);
     } catch (error: unknown) {
->>>>>>> refs/remotes/origin/master
       logger.error("Failed to process mention-based conversation", {
         event: "discord.message.reply_failed",
         messageId: message.id,
@@ -158,17 +114,11 @@ export function registerMessageCreateHandler(
         error: error instanceof Error ? error.message : String(error),
       });
 
-<<<<<<< HEAD
-      await message.reply(
-        "GUIDO hit a municipal paperwork jam while processing that request. Please try again in a moment.",
-      );
-=======
       try {
         await message.reply("Sorry — I hit an error while generating a reply. Please try again.");
       } catch {
         // No-op: avoid unhandled errors from fallback reply attempts.
       }
->>>>>>> refs/remotes/origin/master
     }
   });
 }
