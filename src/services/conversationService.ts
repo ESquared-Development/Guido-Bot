@@ -133,7 +133,7 @@ export class ConversationService {
         requestId,
         blockedByBudget: true,
         replyText:
-          "GUIDO checked the city budget ledger and this request would exceed the current AI usage limits. Please try again later or contact staff if needed.",
+          "I checked the city budget ledger, and this request would exceed the current AI usage limits. Please try again later or contact staff if needed.",
       };
     }
 
