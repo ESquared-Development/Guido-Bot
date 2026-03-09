@@ -11,6 +11,7 @@ async function main(): Promise<void> {
   registerDiscordHandlers(app.discordClient, app.logger, {
     openaiClient: app.openaiClient,
     model: app.config.ai.model,
+    maxOutputTokens: app.config.ai.limits.maxOutputTokens,
   });
   registerShutdownHandlers(app.discordClient, app.logger);
 

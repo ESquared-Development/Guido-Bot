@@ -99,6 +99,7 @@ export function registerMessageCreateHandler(
       const input = normalizePrompt(message, client);
       const completion = await deps.openaiClient.responses.create({
         model: deps.model,
+        max_output_tokens: deps.maxOutputTokens,
         input,
       });
 
