@@ -1,9 +1,17 @@
 import { readdir, readFile } from "node:fs/promises";
 import path from "node:path";
 import type { Logger } from "../../app/logger.js";
-import { KnowledgeError } from "../../app/errors.js";
-import type { KnowledgeDocument, KnowledgeSourceType } from "../types.js";
+import { KnowledgeServiceError } from "../../app/errors.js";
+import type { KnowledgeDocument, KnowledgeSourceType } from "../../types/knowledge.js";
 
+/**
+ * Recursively walk a directory and return all Markdown file paths.
+ *
+ * We deliberately limit Phase 2 to .md files because:
+ * - they are easy to diff and maintain
+ * - they avoid PDF parsing complexity
+ * - they fit your current rule/guide folder plan well
+ */
 async function walkMarkdownFiles(dirPath: string): Promise<string[]> {
   const entries = await readdir(dirPath, { withFileTypes: true });
   const files: string[] = [];
@@ -16,7 +24,7 @@ async function walkMarkdownFiles(dirPath: string): Promise<string[]> {
       continue;
     }
 
-    if (entry.isFile() && entry.name.endsWith(".md")) {
+    if (entry.isFile() && entry.name.toLowerCase().endsWith(".md")) {
       files.push(fullPath);
     }
   }
@@ -24,12 +32,23 @@ async function walkMarkdownFiles(dirPath: string): Promise<string[]> {
   return files;
 }
 
+/**
+ * Build a stable document ID from the source type and file path.
+ */
 function makeDocumentId(sourceType: KnowledgeSourceType, relativePath: string): string {
   return `${sourceType}::${relativePath.replaceAll("\\", "/")}`;
 }
 
-function deriveTitle(fileName: string, rawText: string): string {
-  const firstHeading = rawText.split(/\r?\n/).find((line) => /^#\s+/.test(line.trim()));
+/**
+ * Derive a document title from the first level-1 Markdown heading if present.
+ *
+ * If the file has no # heading, fall back to the filename.
+ */
+function deriveDocumentTitle(fileName: string, rawText: string): string {
+  const firstHeading = rawText
+    .split(/\r?\n/)
+    .find((line) => /^#\s+/.test(line.trim()));
+
   if (firstHeading) {
     return firstHeading.replace(/^#\s+/, "").trim();
   }
@@ -37,6 +56,9 @@ function deriveTitle(fileName: string, rawText: string): string {
   return fileName.replace(/\.md$/i, "");
 }
 
+/**
+ * Load all Markdown documents from a given source root.
+ */
 export async function loadDocumentsFromDirectory(
   rootDir: string,
   sourceType: KnowledgeSourceType,
@@ -44,7 +66,6 @@ export async function loadDocumentsFromDirectory(
 ): Promise<KnowledgeDocument[]> {
   try {
     const markdownFiles = await walkMarkdownFiles(rootDir);
-
     const documents: KnowledgeDocument[] = [];
 
     for (const fullPath of markdownFiles) {
@@ -56,24 +77,28 @@ export async function loadDocumentsFromDirectory(
         id: makeDocumentId(sourceType, relativePath),
         sourceType,
         filePath: fullPath,
+        relativePath,
         fileName,
-        title: deriveTitle(fileName, rawText),
+        title: deriveDocumentTitle(fileName, rawText),
         rawText,
       });
     }
 
-    logger.info("Documents loaded from directory", {
+    logger.info("Loaded knowledge documents from directory", {
       event: "knowledge.documents.loaded",
       sourceType,
       rootDir,
-      count: documents.length,
+      documentCount: documents.length,
     });
 
     return documents;
   } catch (error) {
-    throw new KnowledgeError(
-      `Failed to load documents from directory: ${rootDir}`,
-      { sourceType, rootDir },
+    throw new KnowledgeServiceError(
+      "Failed to load knowledge documents from directory",
+      {
+        sourceType,
+        rootDir,
+      },
       error,
     );
   }

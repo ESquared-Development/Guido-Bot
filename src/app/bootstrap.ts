@@ -11,9 +11,10 @@ import { ConversationService } from "../services/conversationService.js";
 import { GuideSessionService } from "../services/guideSessionService.js";
 import { GuideLobbyService } from "../services/guideLobbyService.js";
 import { IdleMonitorService } from "../services/idleMonitorService.js";
+import { MentionRouter } from "../services/mentionRouter.js";
 
 /**
- * Shared dependency container for the app.
+ * Shared dependency container for the application.
  */
 export interface AppContext {
   config: AppConfig;
@@ -26,10 +27,11 @@ export interface AppContext {
   guideSessionService: GuideSessionService;
   guideLobbyService: GuideLobbyService;
   idleMonitorService: IdleMonitorService;
+  mentionRouter: MentionRouter;
 }
 
 /**
- * Bootstrap the application in a controlled order.
+ * Bootstrap the full application in dependency-safe order.
  */
 export async function bootstrapApp(): Promise<AppContext> {
   const config = loadConfig();
@@ -52,7 +54,11 @@ export async function bootstrapApp(): Promise<AppContext> {
   );
 
   const conversationService = new ConversationService(
+    config,
     logger.child({ service: "conversation" }),
+    openaiClient,
+    knowledgeService,
+    usageTracker,
   );
 
   const guideSessionService = new GuideSessionService(
@@ -67,12 +73,18 @@ export async function bootstrapApp(): Promise<AppContext> {
     logger.child({ service: "idle_monitor" }),
   );
 
+  const mentionRouter = new MentionRouter(
+    discordClient,
+    logger.child({ service: "mention_router" }),
+  );
+
   await usageTracker.initialize();
   await knowledgeService.initialize();
   await conversationService.initialize();
   await guideSessionService.initialize();
   await guideLobbyService.initialize();
   await idleMonitorService.initialize();
+  await mentionRouter.initialize();
 
   const usage = await usageTracker.getAllRecords();
   const summary = summarizeUsage(usage);
@@ -101,5 +113,6 @@ export async function bootstrapApp(): Promise<AppContext> {
     guideSessionService,
     guideLobbyService,
     idleMonitorService,
+    mentionRouter,
   };
 }

@@ -8,7 +8,13 @@ import { registerDiscordHandlers } from "./discord/registerHandlers.js";
 async function main(): Promise<void> {
   const app = await bootstrapApp();
 
-  registerDiscordHandlers(app.discordClient, app.logger);
+  registerDiscordHandlers(
+    app.discordClient,
+    app.logger,
+    app.mentionRouter,
+    app.conversationService,
+  );
+
   registerShutdownHandlers(app.discordClient, app.logger);
 
   app.logger.info("Attempting Discord login", {
